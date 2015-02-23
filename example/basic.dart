@@ -16,7 +16,7 @@ const String INPUT = """
     hexadecimal: 0xDEADbeef,
     positive numbers: +1,
     optional quotes: "This works too!",
-    singles quotes: 'Single quotes is fun as well!'
+    single quotes: 'Single quotes is fun as well!'
   }
 }
 """;

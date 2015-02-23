@@ -2,7 +2,7 @@ import "dart:convert";
 import "package:lson/lson.dart";
 
 const String INPUT = """
-/* LSON Type Defintions */
+# Hello World
 {
   @: LsonExample,
   users: [
@@ -11,7 +11,10 @@ const String INPUT = """
       name: Kenneth Endfinger,
       age: 15
     }
-  ]
+  ],
+  features: {
+    hex: 0xDEADbeef
+  }
 }
 """;
 

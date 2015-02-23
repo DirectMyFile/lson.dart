@@ -12,8 +12,9 @@ class LsonTokenType {
   static const LsonTokenType FALSE = const LsonTokenType("FALSE", "false");
   static const LsonTokenType YES = const LsonTokenType("YES", "yes");
   static const LsonTokenType NO = const LsonTokenType("NO", "no");
-  static final LsonTokenType COMMENT = new LsonTokenType("COMMENT", new RegExp(r"\/\*(.*)\*\/"));
-  static final LsonTokenType NUMBER = new LsonTokenType("NUMBER", new RegExp("-?\\d+(\\.\\d+)?((e|E)(\\+|-)?\\d+)?"));
+  static final LsonTokenType BLOCK_COMMENT = new LsonTokenType("BLOCK_COMMENT", new RegExp(r"\/\*(.*)\*\/"));
+  static final LsonTokenType COMMENT = new LsonTokenType("COMMENT", new RegExp(r"(\/\/|\#)(.*)"));
+  static final LsonTokenType NUMBER = new LsonTokenType("NUMBER", new RegExp(r"(0[xX][0-9a-fA-F]+)|(-?\d+(\.\d+)?((e|E)(\+|-)?\d+)?)"));
   static final LsonTokenType STRING = new LsonTokenType("STRING", (String it) {
     var replace = new RegExp("(?:\\\\[\"\\\\bfnrt\\/]|\\\\u[0-9a-fA-F]{4})");
     var validate = new RegExp("\"[^\"\\\\]*\"");
@@ -35,8 +36,13 @@ class LsonTokenType {
         return OPEN_BRACKET;
       case ']':
         return CLOSE_BRACKET;
+      case '#':
       case '/':
-        return COMMENT;
+        if (peek() == "*") {
+          return BLOCK_COMMENT;
+        } else {
+          return COMMENT;
+        }
       case ',':
         return COMMA;
       case ':':
@@ -272,7 +278,13 @@ class LsonLexer {
           "-",
           "+",
           "e",
-          "E"
+          "E",
+          "A",
+          "B",
+          "C",
+          "D",
+          "F",
+          "x"
         ].contains(read)) {
           buff.write(read);
         } else {
@@ -287,10 +299,29 @@ class LsonLexer {
         token.value = content;
         return token;
       } else {
-        throw new Exception(
-            "Failed to lex number: '${content}' is not a number");
+        throw new Exception("Failed to lex number: '${content}' is not a number");
       }
     } else if (possibleTokenType == LsonTokenType.COMMENT) {
+      var start = _pos;
+
+      var buff = new StringBuffer(current);
+      for (;;) {
+        var c = nextChar();
+
+        if (c == null || c == "\n") {
+          break;
+        } else {
+          buff.write(c);
+        }
+      }
+
+      var content = buff.toString();
+      if (possibleTokenType.matching(content)) {
+        return new LsonToken(LsonTokenType.BLOCK_COMMENT, content, start, _pos);
+      } else {
+        throw new Exception("Invalid Comment!");
+      }
+    } else if (possibleTokenType == LsonTokenType.BLOCK_COMMENT) {
       var start = _pos;
       var buff = new StringBuffer("/");
       for (;;) {
@@ -308,7 +339,7 @@ class LsonLexer {
       
       var content = buff.toString();
       if (possibleTokenType.matching(content)) {
-        return new LsonToken(LsonTokenType.COMMENT, content, start, _pos);
+        return new LsonToken(LsonTokenType.BLOCK_COMMENT, content, start, _pos);
       } else {
         throw new Exception("Invalid Comment!");
       }
@@ -411,7 +442,7 @@ class LsonParser {
       return _down(parseObject());
     } else if (token.type.isValue()) {
       return _down(token.getValue());
-    } else if (token.type == LsonTokenType.COMMENT) {
+    } else if (token.type == LsonTokenType.BLOCK_COMMENT) {
       return _down(parse());
     } else {
       throw new Exception("Invalid Token Type: ${token.type.name}");
@@ -448,7 +479,7 @@ class LsonParser {
         expectValue = true;
       } else if (token.type == LsonTokenType.CLOSE_BRACKET) {
         break;
-      } else if (token.type == LsonTokenType.COMMENT) {
+      } else if (token.type == LsonTokenType.BLOCK_COMMENT) {
       } else {
         throw new Exception("Invalid Token: ${token.type.name}");
       }
@@ -498,7 +529,7 @@ class LsonParser {
         } else {
           out[key] = parseObject();
         }
-      } else if (token.type == LsonTokenType.COMMENT) {
+      } else if (token.type == LsonTokenType.BLOCK_COMMENT) {
       } else if (token.type == LsonTokenType.COMMA) {
         expectValue = true;
         isKey = true;

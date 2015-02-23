@@ -2,7 +2,7 @@ import "dart:convert";
 import "package:lson/lson.dart";
 
 const String INPUT = """
-# Hello World
+# LSON Example
 {
   @: LsonExample,
   users: [
@@ -13,7 +13,10 @@ const String INPUT = """
     }
   ],
   features: {
-    hex: 0xDEADbeef
+    hexadecimal: 0xDEADbeef,
+    positive numbers: +1,
+    optional quotes: "This works too!",
+    singles quotes: 'Single quotes is fun as well!'
   }
 }
 """;

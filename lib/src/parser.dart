@@ -16,8 +16,8 @@ class LsonTokenType {
   static final LsonTokenType COMMENT = new LsonTokenType("COMMENT", new RegExp(r"(\/\/|\#)(.*)"));
   static final LsonTokenType NUMBER = new LsonTokenType("NUMBER", new RegExp(r"(0[xX][0-9a-fA-F]+)|(-?\d+(\.\d+)?((e|E)(\+|-)?\d+)?)"));
   static final LsonTokenType STRING = new LsonTokenType("STRING", (String it) {
-    var replace = new RegExp("(?:\\\\[\"\\\\bfnrt\\/]|\\\\u[0-9a-fA-F]{4})");
-    var validate = new RegExp("\"[^\"\\\\]*\"");
+    var replace = new RegExp(r'(?:\\["\\bfnrt\/]|\\u[0-9a-fA-F]{4})');
+    var validate = new RegExp(r'"[^"\\]*"');
     return validate.hasMatch(it.replaceAll(replace, "@"));
   });
 
@@ -63,6 +63,7 @@ class LsonTokenType {
       case '"':
         return STRING;
       case '-':
+      case "+":
       case '0':
       case '1':
       case '2':
@@ -235,13 +236,22 @@ class LsonLexer {
 
     if (possibleTokenType == LsonTokenType.STRING) {
       var buff = new StringBuffer();
+      var started = true;
 
       previousChar();
+
+      flipStarted() {
+        var m = started;
+        started = !started;
+        return m;
+      }
+
       for (;;) {
         var read = nextChar();
         if (read == null) return null;
 
-        if (['"', "'", ":", ",", "}", "]", "\n"].contains(read)) {
+        if (['"', "'", ":", ",", "}", "]", "\n"].contains(read) && !(((read == '"' || read == "'") && flipStarted()))) {
+
           if (read != '"' && read != "'") {
             previousChar(); // Back it up so that braces are fine.
           } else {
@@ -250,6 +260,7 @@ class LsonLexer {
 
           token.end = _pos;
           token.value = buff.toString();
+          print(buff.toString());
           return token;
         } else {
           buff.write(read);
@@ -284,7 +295,13 @@ class LsonLexer {
           "C",
           "D",
           "F",
-          "x"
+          "x",
+          "X",
+          "a",
+          "b",
+          "c",
+          "d",
+          "f"
         ].contains(read)) {
           buff.write(read);
         } else {

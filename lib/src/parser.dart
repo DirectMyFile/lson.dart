@@ -132,6 +132,13 @@ class LsonToken {
     return "LsonToken(type: ${type.name}, value: ${value}, start: ${start}, end: ${end})";
   }
 
+  bool isValue() => type.isValue();
+  bool isComment() => type == LsonTokenType.COMMENT || type == LsonTokenType.BLOCK_COMMENT;
+  bool isCurlyBrace() => type == LsonTokenType.OPEN_CURLY || type == LsonTokenType.CLOSE_CURLY;
+  bool isBracket() => type == LsonTokenType.OPEN_BRACKET || type == LsonTokenType.CLOSE_BRACKET;
+  bool isComma() => type == LsonTokenType.COMMA;
+  bool isColon() => type == LsonTokenType.COLON;
+
   dynamic getValue() {
     if (type == LsonTokenType.STRING) {
       var str = value;
@@ -142,6 +149,8 @@ class LsonToken {
         } else {
           str = str.substring(1, str.length - 1);
         }
+      } else {
+        str = str.trim();
       }
       return _unescapeLSON('"${str}"');
     } else if (type == LsonTokenType.NUMBER) {
@@ -259,7 +268,7 @@ class LsonLexer {
           }
 
           token.end = _pos;
-          token.value = buff.toString();
+          token.value = buff.toString().trim();
           return token;
         } else {
           buff.write(read);
@@ -304,6 +313,7 @@ class LsonLexer {
         ].contains(read)) {
           buff.write(read);
         } else {
+          previousChar();
           break;
         }
       }
@@ -343,7 +353,7 @@ class LsonLexer {
       for (;;) {
         var c = nextChar();
         var v = nextChar();
-        
+
         if ((c + v) == "*/") {
           buff.write("*/");
           break;
@@ -352,7 +362,7 @@ class LsonLexer {
           previousChar();
         }
       }
-      
+
       var content = buff.toString();
       if (possibleTokenType.matching(content)) {
         return new LsonToken(LsonTokenType.BLOCK_COMMENT, content, start, _pos);
@@ -510,7 +520,7 @@ class LsonParser {
     LsonToken token;
     var expectValue = true;
     var key;
-    
+
     var isKey = true;
 
     while ((token = lexer.nextToken()) != null) {
@@ -576,3 +586,96 @@ String _unescapeLSON(String input) {
   return JSON.decode(input);
 }
 
+String prettyPrint(String input) {
+  var lexer = new LsonLexer(input);
+  var buff = new StringBuffer();
+  var tokens = [];
+
+  while (lexer.hasNext()) {
+    tokens.add(lexer.next());
+  }
+
+  var lastToken = null;
+  int level = 0;
+
+  void indent([bool down = false]) {
+    var l = level;
+
+    if (down == true) {
+      l = level - 1;
+    } else if (down == null) {
+      l = level + 1;
+    }
+
+    if (l > 0) {
+      buff.write("  " * l);
+    }
+  }
+
+  while (tokens.isNotEmpty) {
+    var token = tokens.removeAt(0);
+    print(token);
+    if (token.isCurlyBrace()) {
+      if (token.value == "{") {
+        level++;
+        var next = tokens.first;
+        if (next.isValue() || next.isCurlyBrace() || next.isBracket() || next.isComma()) {
+          if (!lastToken.isColon()) {
+            indent(true);
+          }
+          buff.write("{\n");
+        } else {
+          buff.write("{");
+        }
+      } else {
+        level--;
+        indent();
+        if (lastToken.isValue() || lastToken.isBracket() || lastToken.isCurlyBrace()) {
+          buff.write("\n");
+          indent();
+          buff.write("}");
+        } else {
+          buff.write("}");
+        }
+      }
+    } else if (token.isBracket()) {
+      if (token.value == "[") {
+        level++;
+        var next = tokens.first;
+        if (next.isValue() || next.isCurlyBrace() || next.isBracket() || next.isComma()) {
+          if (!lastToken.isColon()) {
+            indent(true);
+          }
+          buff.write("[\n");
+        } else {
+          buff.write("[");
+        }
+      } else {
+        level--;
+        indent();
+        if (lastToken.isValue() || lastToken.isBracket() || lastToken.isCurlyBrace()) {
+          buff.write("\n");
+          indent();
+          buff.write("]");
+        } else {
+          buff.write("]");
+        }
+      }
+    } else if (token.isValue()) {
+      if (!lastToken.isColon()) {
+        indent();
+      }
+      buff.write(token.value);
+    } else if (token.isComma()) {
+      buff.write(",");
+      if (lastToken.isValue() || lastToken.isBracket() || lastToken.isCurlyBrace()) {
+        buff.write("\n");
+      }
+    } else if (token.isColon()) {
+      buff.write(": ");
+    }
+    lastToken = token;
+  }
+
+  return buff.toString();
+}

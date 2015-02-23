@@ -27,7 +27,7 @@ const String INPUT = """
 """;
 
 void main() {
-  var out = parse(INPUT);
-
-  print(out);
+  print(parse(INPUT));
+  print(prettify(INPUT));
+  print(uglify(INPUT));
 }

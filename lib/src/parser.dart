@@ -614,7 +614,6 @@ String prettyPrint(String input) {
 
   while (tokens.isNotEmpty) {
     var token = tokens.removeAt(0);
-    print(token);
     if (token.isCurlyBrace()) {
       if (token.value == "{") {
         level++;

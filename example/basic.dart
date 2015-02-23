@@ -1,4 +1,3 @@
-import "dart:convert";
 import "package:lson/lson.dart";
 
 const String INPUT = """
@@ -16,7 +15,13 @@ const String INPUT = """
     hexadecimal: 0xDEADbeef,
     positive numbers: +1,
     optional quotes: "This works too!",
-    single quotes: 'Single quotes is fun as well!'
+    single quotes: 'Single quotes is fun as well!',
+    more keys: {
+      1: One,
+      2: Two,
+      true: Is Truthy,
+      false: Is Falsy
+    }
   }
 }
 """;
@@ -24,5 +29,5 @@ const String INPUT = """
 void main() {
   var out = parse(INPUT);
 
-  print(new JsonEncoder.withIndent("  ").convert(out));
+  print(out);
 }

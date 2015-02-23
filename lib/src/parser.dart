@@ -260,7 +260,6 @@ class LsonLexer {
 
           token.end = _pos;
           token.value = buff.toString();
-          print(buff.toString());
           return token;
         } else {
           buff.write(read);
@@ -522,6 +521,7 @@ class LsonParser {
 
         if (isKey) {
           key = token.getValue();
+          isKey = false;
         } else {
           out[key] = token.getValue();
           isKey = true;

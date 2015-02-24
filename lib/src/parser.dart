@@ -223,7 +223,3 @@ class LsonParser {
     return _down(out);
   }
 }
-
-String _unescapeLSON(String input) {
-  return JSON.decode(input);
-}

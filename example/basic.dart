@@ -19,6 +19,7 @@ const String INPUT = """
       "because some people like them."
     ],
     single quotes: 'Single quotes work!',
+    escapes: '\\r',
     more keys: {
       1: One,
       2: Two,

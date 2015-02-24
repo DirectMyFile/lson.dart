@@ -12,6 +12,7 @@ part "src/tokens_builder.dart";
 part "src/processor.dart";
 part "src/type_processor.dart";
 part "src/encoder.dart";
+part "src/utils.dart";
 
 dynamic parse(String input, {LsonProcessor processor}) {
   var result = new LsonParser.forString(input).parse();

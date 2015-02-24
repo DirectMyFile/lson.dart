@@ -17,14 +17,20 @@ final INPUT = {
         "title": "Programmer"
       }
     }
-  ]
+  ],
+  "escapes": {
+    "newline": "\n",
+    "return": "\r",
+    "backspace": "\b",
+    "unicode": {
+      "smiley": "\u263A"
+    }
+  }
 };
 
 void main() {
   var encoder = new LsonEncoder(INPUT, options: new LsonEncoderOptions(
-      prettyPrint: true,
-      useSingleQuotes: true,
-      alwaysQuote: true
+      prettyPrint: true
   ));
   
   print(encoder.encode());

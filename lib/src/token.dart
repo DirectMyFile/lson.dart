@@ -39,7 +39,7 @@ class LsonToken {
       if (str.endsWith('"')) {
         str = str.substring(0, str.length - 1);
       }
-      return _unescapeLSON('"${str}"');
+      return _unescape(str);
     } else if (type == LsonTokenType.NUMBER) {
       return num.parse(value);
     } else if (type == LsonTokenType.TRUE || type == LsonTokenType.YES) {

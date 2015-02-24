@@ -24,14 +24,20 @@ const String INPUT = """
       2: Two,
       true: Is Truthy,
       false: Is Falsy
-    }
+    },
+    sets: (
+      Hello,
+      World
+    )
   }
 }
 """;
 
 void main() {
+  print("== Parsed ==");
   print(parse(INPUT));
+  print("== Pretty Printer ==");
   print(prettify(INPUT));
+  print("== Uglifier ==");
   print(uglify(INPUT));
-  print(parse(uglify(INPUT)));
 }

@@ -18,6 +18,7 @@ class LsonToken {
   bool isComment() => type == LsonTokenType.COMMENT || type == LsonTokenType.BLOCK_COMMENT;
   bool isCurlyBrace() => type == LsonTokenType.OPEN_CURLY || type == LsonTokenType.CLOSE_CURLY;
   bool isBracket() => type == LsonTokenType.OPEN_BRACKET || type == LsonTokenType.CLOSE_BRACKET;
+  bool isParentheses() => type == LsonTokenType.OPEN_PARENS || type == LsonTokenType.CLOSE_PARENS;
   bool isComma() => type == LsonTokenType.COMMA;
   bool isColon() => type == LsonTokenType.COLON;
 

@@ -43,7 +43,7 @@ String prettify(input) {
       if (token.value == "{") {
         level++;
         var next = tokens.first;
-        if (next.isValue() || next.isCurlyBrace() || next.isBracket() || next.isComma()) {
+        if (next.isValue() || next.isCurlyBrace() || next.isBracket() || next.isComma() || next.isParentheses()) {
           if (lastToken == null || !lastToken.isColon()) {
             indent(true);
           }
@@ -54,7 +54,7 @@ String prettify(input) {
       } else {
         level--;
         indent();
-        if (lastToken.isValue() || lastToken.isBracket() || lastToken.isCurlyBrace()) {
+        if (lastToken.isValue() || lastToken.isBracket() || lastToken.isCurlyBrace() || lastToken.isParentheses()) {
           buff.write("\n");
           indent();
           buff.write("}");
@@ -66,7 +66,7 @@ String prettify(input) {
       if (token.value == "[") {
         level++;
         var next = tokens.first;
-        if (next.isValue() || next.isCurlyBrace() || next.isBracket() || next.isComma()) {
+        if (next.isValue() || next.isCurlyBrace() || next.isBracket() || next.isComma() || next.isParentheses()) {
           if (lastToken == null || !lastToken.isColon()) {
             indent(true);
           }
@@ -77,12 +77,35 @@ String prettify(input) {
       } else {
         level--;
         indent();
-        if (lastToken.isValue() || lastToken.isBracket() || lastToken.isCurlyBrace()) {
+        if (lastToken.isValue() || lastToken.isBracket() || lastToken.isCurlyBrace() || lastToken.isParentheses()) {
           buff.write("\n");
           indent();
           buff.write("]");
         } else {
           buff.write("]");
+        }
+      }
+    } else if (token.isParentheses()) {
+      if (token.value == "(") {
+        level++;
+        var next = tokens.first;
+        if (next.isValue() || next.isCurlyBrace() || next.isBracket() || next.isComma() || next.isParentheses()) {
+          if (lastToken == null || !lastToken.isColon()) {
+            indent(true);
+          }
+          buff.write("(\n");
+        } else {
+          buff.write("(");
+        }
+      } else {
+        level--;
+        indent();
+        if (lastToken.isValue() || lastToken.isBracket() || lastToken.isCurlyBrace() || lastToken.isParentheses()) {
+          buff.write("\n");
+          indent();
+          buff.write(")");
+        } else {
+          buff.write(")");
         }
       }
     } else if (token.isValue()) {
@@ -92,7 +115,7 @@ String prettify(input) {
       buff.write(token.value);
     } else if (token.isComma()) {
       buff.write(",");
-      if (lastToken.isValue() || lastToken.isBracket() || lastToken.isCurlyBrace()) {
+      if (lastToken.isValue() || lastToken.isBracket() || lastToken.isCurlyBrace() || lastToken.isParentheses()) {
         buff.write("\n");
       }
     } else if (token.isColon()) {

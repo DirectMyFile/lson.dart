@@ -40,6 +40,8 @@ class LsonParser {
       return _down(parseObject());
     } else if (token.type.isValue()) {
       return _down(token.getValue());
+    } else if (token.type == LsonTokenType.OPEN_PARENS) {
+      return _down(parseSet());
     } else if (token.type == LsonTokenType.BLOCK_COMMENT) {
       return _down(parse());
     } else {
@@ -73,9 +75,60 @@ class LsonParser {
         }
 
         out.add(parseObject());
+      } else if (token.type == LsonTokenType.OPEN_PARENS) {
+        if (!expectValue) {
+          throw new Exception("ERROR: Value should not be here.");
+        }
+
+        out.add(parseSet());
       } else if (token.type == LsonTokenType.COMMA) {
         expectValue = true;
       } else if (token.type == LsonTokenType.CLOSE_BRACKET) {
+        break;
+      } else if (token.type == LsonTokenType.BLOCK_COMMENT) {
+      } else {
+        throw new Exception("Invalid Token: ${token.type.name}");
+      }
+    }
+
+    return _down(out);
+  }
+  
+  Set parseSet() {
+    _up();
+
+    var out = new Set();
+    LsonToken token;
+    var expectValue = true;
+
+    while ((token = lexer.nextToken()) != null) {
+      if (token.type.isValue()) {
+        if (!expectValue) {
+          throw new Exception("ERROR: Value should not be here.");
+        }
+
+        out.add(token.getValue());
+      } else if (token.type == LsonTokenType.OPEN_BRACKET) {
+        if (!expectValue) {
+          throw new Exception("ERROR: Value should not be here.");
+        }
+
+        out.add(parseArray());
+      } else if (token.type == LsonTokenType.OPEN_CURLY) {
+        if (!expectValue) {
+          throw new Exception("ERROR: Value should not be here.");
+        }
+
+        out.add(parseObject());
+      } else if (token.type == LsonTokenType.OPEN_PARENS) {
+        if (!expectValue) {
+          throw new Exception("ERROR: Value should not be here.");
+        }
+
+        out.add(parseSet());
+      } else if (token.type == LsonTokenType.COMMA) {
+        expectValue = true;
+      } else if (token.type == LsonTokenType.CLOSE_PARENS) {
         break;
       } else if (token.type == LsonTokenType.BLOCK_COMMENT) {
       } else {
@@ -117,6 +170,16 @@ class LsonParser {
           throw new Exception("Arrays are not valid keys!");
         } else {
           out[key] = parseArray();
+        }
+      } else if (token.type == LsonTokenType.OPEN_PARENS) {
+        if (!expectValue) {
+          throw new Exception("ERROR: Value should not be here.");
+        }
+
+        if (isKey) {
+          throw new Exception("Sets are not valid keys!");
+        } else {
+          out[key] = parseSet();
         }
       } else if (token.type == LsonTokenType.OPEN_CURLY) {
         if (!expectValue) {

@@ -17,6 +17,12 @@ class LsonTokensBuilder {
   LsonTokensBuilder closeBracket() =>
       _addToken(LsonTokenType.CLOSE_BRACKET, "]");
   
+  LsonTokensBuilder openParentheses() =>
+      _addToken(LsonTokenType.OPEN_PARENS, "(");
+  
+  LsonTokensBuilder closeParentheses() =>
+      _addToken(LsonTokenType.CLOSE_PARENS, ")");
+  
   LsonTokensBuilder number(num value) =>
       _addToken(LsonTokenType.NUMBER, value.toString());
   

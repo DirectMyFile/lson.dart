@@ -7,6 +7,8 @@ class LsonTokenType {
   static const LsonTokenType CLOSE_BRACKET = const LsonTokenType("CLOSE_BRACKET", "]");
   static const LsonTokenType COLON = const LsonTokenType("COLON", ":");
   static const LsonTokenType COMMA = const LsonTokenType("COMMA", ",");
+  static const LsonTokenType OPEN_PARENS = const LsonTokenType("OPEN_PARENS", "(");
+  static const LsonTokenType CLOSE_PARENS = const LsonTokenType("CLOSE_PARENS", ")");
   static const LsonTokenType NULL = const LsonTokenType("NULL", "null");
   static const LsonTokenType TRUE = const LsonTokenType("TRUE", "true");
   static const LsonTokenType FALSE = const LsonTokenType("FALSE", "false");
@@ -36,6 +38,10 @@ class LsonTokenType {
         return OPEN_BRACKET;
       case ']':
         return CLOSE_BRACKET;
+      case '(':
+        return OPEN_PARENS;
+      case ')':
+        return CLOSE_PARENS;
       case '#':
       case '/':
         if (peek() == "*") {
@@ -86,6 +92,8 @@ class LsonTokenType {
     CLOSE_CURLY,
     OPEN_BRACKET,
     CLOSE_BRACKET,
+    OPEN_PARENS,
+    CLOSE_PARENS,
     COMMA,
     COLON,
     NULL,

@@ -1,11 +1,41 @@
 part of lson;
 
-class LsonLexer {
+abstract class LsonLexer {
+  bool hasNext();
+  LsonToken nextToken();
+  LsonToken next();
+}
+
+class LsonTokensLexer extends LsonLexer {
+  final List<LsonToken> tokens;
+  
+  LsonTokensLexer(this.tokens);
+  
+  int _index = -1;
+  
+  @override
+  bool hasNext() {
+    return _index + 1 < tokens.length;
+  }
+
+  @override
+  LsonToken next() {
+    _index++;
+    return tokens[_index];
+  }
+
+  @override
+  LsonToken nextToken() {
+    return next();
+  }
+}
+
+class LsonStringLexer extends LsonLexer {
   final String input;
 
   int _pos = -1;
 
-  LsonLexer(this.input);
+  LsonStringLexer(this.input);
 
   String get current {
     if (_pos == input.length) {
@@ -246,6 +276,7 @@ class LsonLexer {
     return current;
   }
 
+  @override
   bool hasNext() {
     _current = nextToken();
     if (_current == null) {
@@ -254,6 +285,7 @@ class LsonLexer {
     return true;
   }
 
+  @override
   LsonToken next() {
     return _current;
   }

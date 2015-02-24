@@ -5,7 +5,9 @@ class LsonParser {
   final int nestingLimit;
 
   LsonParser(this.lexer, {this.nestingLimit: 500});
-
+  LsonParser.forString(String input) : this(new LsonStringLexer(input));
+  LsonParser.forTokens(List<LsonToken> tokens) : this(new LsonTokensLexer(tokens));
+  
   int _level = 0;
 
   dynamic _up([value]) {

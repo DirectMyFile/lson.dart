@@ -1,12 +1,23 @@
 part of lson;
 
-String prettify(String input) {
-  var lexer = new LsonLexer(input);
+String prettify(input) {
   var buff = new StringBuffer();
   var tokens = [];
-
-  while (lexer.hasNext()) {
-    tokens.add(lexer.next());
+  
+  if (input is List) {
+    tokens = input;
+  } else if (input is String) {
+    var lexer = new LsonStringLexer(input);
+    while (lexer.hasNext()) {
+      tokens.add(lexer.next());
+    }
+  } else if (input is LsonLexer) {
+    var lexer = input;
+    while (lexer.hasNext()) {
+      tokens.add(lexer.next());
+    }
+  } else {
+    throw new Exception("Invalid Input!");
   }
 
   var lastToken = null;
@@ -33,7 +44,7 @@ String prettify(String input) {
         level++;
         var next = tokens.first;
         if (next.isValue() || next.isCurlyBrace() || next.isBracket() || next.isComma()) {
-          if (!lastToken.isColon()) {
+          if (lastToken == null || !lastToken.isColon()) {
             indent(true);
           }
           buff.write("{\n");
@@ -56,7 +67,7 @@ String prettify(String input) {
         level++;
         var next = tokens.first;
         if (next.isValue() || next.isCurlyBrace() || next.isBracket() || next.isComma()) {
-          if (!lastToken.isColon()) {
+          if (lastToken == null || !lastToken.isColon()) {
             indent(true);
           }
           buff.write("[\n");

@@ -8,7 +8,8 @@ part "src/token.dart";
 part "src/lexer.dart";
 part "src/prettify.dart";
 part "src/uglify.dart";
+part "src/tokens_builder.dart";
 
 dynamic parse(String input) {
-  return new LsonParser(new LsonLexer(input)).parse();
+  return new LsonParser.forString(input).parse();
 }

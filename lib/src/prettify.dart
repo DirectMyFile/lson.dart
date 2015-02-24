@@ -54,7 +54,7 @@ String prettify(input) {
       } else {
         level--;
         indent();
-        if (lastToken.isValue() || lastToken.isBracket() || lastToken.isCurlyBrace() || lastToken.isParentheses()) {
+        if (lastToken.isValue() || lastToken.isBracket() || lastToken.isCurlyBrace() || lastToken.isParentheses() || lastToken.isColon()) {
           buff.write("\n");
           indent();
           buff.write("}");

@@ -145,6 +145,7 @@ class LsonParser {
     LsonToken token;
     var expectValue = true;
     var key;
+    var noValues = [];
 
     var isKey = true;
 
@@ -157,9 +158,11 @@ class LsonParser {
         if (isKey) {
           key = token.getValue();
           isKey = false;
+          noValues.add(key);
         } else {
           out[key] = token.getValue();
           isKey = true;
+          noValues.remove(key);
         }
       } else if (token.type == LsonTokenType.OPEN_BRACKET) {
         if (!expectValue) {
@@ -169,6 +172,7 @@ class LsonParser {
         if (isKey) {
           throw new Exception("Arrays are not valid keys!");
         } else {
+          noValues.remove(key);
           out[key] = parseArray();
         }
       } else if (token.type == LsonTokenType.OPEN_PARENS) {
@@ -179,6 +183,7 @@ class LsonParser {
         if (isKey) {
           throw new Exception("Sets are not valid keys!");
         } else {
+          noValues.remove(key);
           out[key] = parseSet();
         }
       } else if (token.type == LsonTokenType.OPEN_CURLY) {
@@ -189,6 +194,7 @@ class LsonParser {
         if (isKey) {
           throw new Exception("Objects are not valid keys!");
         } else {
+          noValues.remove(key);
           out[key] = parseObject();
         }
       } else if (token.type == LsonTokenType.BLOCK_COMMENT) {
@@ -197,6 +203,11 @@ class LsonParser {
         isKey = true;
         key = null;
       } else if (token.type == LsonTokenType.CLOSE_CURLY) {
+        if (noValues.isNotEmpty) { // Fill in stuff with no values.
+          for (var x in noValues) {
+            out[x] = null;
+          }
+        }
         break;
       } else if (token.type == LsonTokenType.COLON) {
         isKey = false;

@@ -8,7 +8,7 @@ const String INPUT = """
     {
       @: LsonUser,
       name: Kenneth Endfinger,
-      age
+      age # Automatically Null
     }
   ],
   features: {

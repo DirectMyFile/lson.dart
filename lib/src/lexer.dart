@@ -122,7 +122,7 @@ class LsonStringLexer extends LsonLexer {
         var read = nextChar();
         if (read == null) return null;
 
-        if (['"', "'", ":", ",", "}", "]", ")", "\n"].contains(read) && !(((read == '"' || read == "'") && flipStarted()))) {
+        if (['"', "'", ":", ",", "}", "]", ")", "\n", "#", "/"].contains(read) && !(((read == '"' || read == "'") && flipStarted()))) {
 
           if (read != '"' && read != "'") {
             previousChar(); // Back it up so that braces are fine.

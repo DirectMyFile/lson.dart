@@ -33,7 +33,7 @@ class LsonTokensBuilder {
       _addToken(LsonTokenType.NULL, "null");
   
   LsonTokensBuilder string(String value, {bool forceQuote: false, bool useSingleQuotes: false}) {
-    if (["{", "}", "[", "]", '"', "'", "(", ")", ",", ":", "\n"].any(value.contains) || forceQuote) {
+    if (["{", "}", "[", "]", '"', "'", "(", ")", ",", ":", "\n", "#", "/"].any(value.contains) || forceQuote) {
       var quoted = JSON.encode(value);
       
       if (useSingleQuotes && quoted.startsWith('"') && quoted.endsWith('"')) {

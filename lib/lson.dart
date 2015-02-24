@@ -15,3 +15,7 @@ part "src/encoder.dart";
 dynamic parse(String input) {
   return new LsonParser.forString(input).parse();
 }
+
+String encode(dynamic input, {LsonEncoderOptions options: LsonEncoderOptions.DEFAULT}) {
+  return new LsonEncoder(input, options: options).encode();
+}

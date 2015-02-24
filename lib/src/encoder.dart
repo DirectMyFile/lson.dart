@@ -19,7 +19,7 @@ class LsonEncoder {
   
   LsonEncoder(this.input, {this.options: LsonEncoderOptions.DEFAULT});
   
-  String encode({bool pretty: false}) {
+  String encode() {
     visit(input);
     return _b.toString(options.prettyPrint);
   }

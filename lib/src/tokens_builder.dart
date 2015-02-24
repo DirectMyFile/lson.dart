@@ -48,6 +48,6 @@ class LsonTokensBuilder {
   
   @override
   String toString([bool pretty = true]) {
-    return (pretty ? prettify : uglify)(tokens);
+    return (pretty ? prettify : minify)(tokens);
   }
 }

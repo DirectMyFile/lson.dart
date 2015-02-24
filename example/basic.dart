@@ -39,5 +39,5 @@ void main() {
   print("== Pretty Printer ==");
   print(prettify(INPUT));
   print("== Uglifier ==");
-  print(uglify(INPUT));
+  print(minify(INPUT));
 }

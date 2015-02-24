@@ -1,6 +1,6 @@
 part of lson;
 
-String uglify(input) {
+String minify(input) {
   LsonLexer lexer;
   
   if (input is String) {

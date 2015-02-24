@@ -167,6 +167,9 @@ class LsonStringLexer extends LsonLexer {
     if (possibleTokenType == LsonTokenType.STRING) {
       var buff = new StringBuffer();
       var started = true;
+      var quoted = false;
+      var isFirst = true;
+      var quote = '';
 
       previousChar();
 
@@ -180,8 +183,15 @@ class LsonStringLexer extends LsonLexer {
         var read = nextChar();
         if (read == null) return null;
 
-        if (['"', "'", ":", ",", "}", "]", ")", "\n", "#", "/"].contains(read) && !(((read == '"' || read == "'") && flipStarted()))) {
-
+        if (isFirst) {
+          if (read == '"' || read == "'") {
+            quoted = true;
+            quote = read;
+          }
+          isFirst = false;
+        }
+        
+        if ((quoted ? read == quote : true) && ['"', "'", ":", ",", "}", "]", ")", "\n", "#", "/"].contains(read) && !(((read == '"' || read == "'") && flipStarted()))) {
           if (read != '"' && read != "'") {
             previousChar(); // Back it up so that braces are fine.
           } else {

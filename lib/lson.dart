@@ -10,6 +10,7 @@ part "src/prettify.dart";
 part "src/minify.dart";
 part "src/tokens_builder.dart";
 part "src/type_processor.dart";
+part "src/encoder.dart";
 
 dynamic parse(String input) {
   return new LsonParser.forString(input).parse();

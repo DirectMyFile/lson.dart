@@ -32,8 +32,23 @@ class LsonTokensBuilder {
   LsonTokensBuilder nil() =>
       _addToken(LsonTokenType.NULL, "null");
   
-  LsonTokensBuilder string(String value) =>
-      _addToken(LsonTokenType.STRING, JSON.encode(value));
+  LsonTokensBuilder string(String value, {bool forceQuote: false, bool useSingleQuotes: false}) {
+    if (["{", "}", "[", "]", '"', "'", "(", ")", ",", ":", "\n"].any(value.contains) || forceQuote) {
+      var quoted = JSON.encode(value);
+      
+      if (useSingleQuotes && quoted.startsWith('"') && quoted.endsWith('"')) {
+        if (quoted.length == 2) {
+          quoted = "''";
+        } else {
+          quoted = "'" + quoted.substring(1, quoted.length - 1) + "'";
+        }
+      }
+      
+      return _addToken(LsonTokenType.STRING, quoted);
+    } else {
+      return _addToken(LsonTokenType.STRING, value);
+    }
+  }
   
   LsonTokensBuilder comma() =>
       _addToken(LsonTokenType.COMMA, ",");

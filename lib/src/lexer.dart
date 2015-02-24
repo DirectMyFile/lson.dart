@@ -4,6 +4,14 @@ abstract class LsonLexer {
   bool hasNext();
   LsonToken nextToken();
   LsonToken next();
+  
+  List<LsonToken> allTokens() {
+    var list = [];
+    while (hasNext()) {
+      list.add(next());
+    }
+    return list;
+  }
 }
 
 class LsonTokensLexer extends LsonLexer {

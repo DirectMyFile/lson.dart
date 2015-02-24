@@ -48,6 +48,6 @@ void main() {
   provider.register("Example", (map) => new Example()..users = map["users"]);
   provider.register("User", (map) => new User()..name = map["name"]..job = map["job"]);
   provider.register("Job", (map) => new Job()..title = map["title"]);
-  var processor = new LsonTypeProcessor(parse(INPUT), provider);
-  print(processor.process());
+  var processor = new LsonTypeProcessor(provider);
+  print(processor.process(parse(INPUT)));
 }

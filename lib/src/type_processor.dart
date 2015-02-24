@@ -23,13 +23,12 @@ class LsonTypeRegister extends LsonTypeProvider {
   }
 }
 
-class LsonTypeProcessor {
+class LsonTypeProcessor extends LsonProcessor {
   final LsonTypeProvider provider;
-  final dynamic input;
   
-  LsonTypeProcessor(this.input, this.provider);
+  LsonTypeProcessor(this.provider);
   
-  dynamic process() {
+  dynamic process(dynamic input) {
     return _process(input);
   }
   

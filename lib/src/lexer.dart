@@ -192,10 +192,10 @@ class LsonStringLexer extends LsonLexer {
         }
         
         if ((quoted ? read == quote : true) && ['"', "'", ":", ",", "}", "]", ")", "\n", "#", "/"].contains(read) && !(((read == '"' || read == "'") && flipStarted()))) {
-          if (read != '"' && read != "'") {
-            previousChar(); // Back it up so that braces are fine.
-          } else {
+          if (read == '"' || read == "'") {
             buff.write(read);
+          } else {
+            previousChar(); // Back it up so that braces are fine.
           }
 
           token.end = _pos;

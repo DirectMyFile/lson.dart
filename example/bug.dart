@@ -16,7 +16,8 @@ const String INPUT = """
     positive numbers: +1,
     optional quotes: [
       Quotes are optional,
-      "because some people like them."
+      "because some people like them.",
+      while others don't
     ],
     single quotes: 'Single quotes work!',
     more keys: {

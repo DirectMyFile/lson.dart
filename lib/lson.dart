@@ -1,7 +1,5 @@
 library lson;
 
-import "dart:convert";
-
 part "src/parser.dart";
 part "src/token_type.dart";
 part "src/token.dart";

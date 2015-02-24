@@ -54,18 +54,6 @@ class LsonTokenType {
         return COMMA;
       case ':':
         return COLON;
-      case 't':
-        return TRUE;
-      case 'f':
-        return FALSE;
-      case 'n':
-        if (peek() == "o") {
-          return NO;
-        }
-
-        return NULL;
-      case 'y':
-        return YES;
       case "'":
       case '"':
         return STRING;
@@ -82,6 +70,18 @@ class LsonTokenType {
       case '8':
       case '9':
         return NUMBER;
+      case 't':
+        return TRUE;
+      case 'f':
+        return FALSE;
+      case 'n':
+        if (peek() == "o") {
+          return NO;
+        }
+
+        return NULL;
+      case 'y':
+        return YES;
       default:
         return STRING;
     }
@@ -113,7 +113,7 @@ class LsonTokenType {
     if (validate is String) {
       return input == validate;
     } else if (validate is RegExp) {
-      return validate.hasMatch(input);
+      return validate.hasMatch(input) && validate.firstMatch(input).group(0) == input;
     } else if (validate is Function) {
       return validate(input);
     } else if (validate is List) {

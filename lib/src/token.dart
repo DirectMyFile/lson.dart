@@ -27,13 +27,17 @@ class LsonToken {
       var str = value;
 
       if (str.startsWith('"') || str.startsWith("'")) {
-        if (str.length == 2) {
+        if (str.length <= 2) {
           str = "";
         } else {
           str = str.substring(1, str.length - 1);
         }
       } else {
         str = str.trim();
+      }
+      
+      if (str.endsWith('"')) {
+        str = str.substring(0, str.length - 1);
       }
       return _unescapeLSON('"${str}"');
     } else if (type == LsonTokenType.NUMBER) {

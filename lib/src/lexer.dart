@@ -104,39 +104,6 @@ class LsonStringLexer extends LsonLexer {
         possibleTokenType = result;
         token.type = result;
       }
-    }
-
-    if (possibleTokenType == LsonTokenType.STRING) {
-      var buff = new StringBuffer();
-      var started = true;
-
-      previousChar();
-
-      flipStarted() {
-        var m = started;
-        started = !started;
-        return m;
-      }
-
-      for (;;) {
-        var read = nextChar();
-        if (read == null) return null;
-
-        if (['"', "'", ":", ",", "}", "]", ")", "\n", "#", "/"].contains(read) && !(((read == '"' || read == "'") && flipStarted()))) {
-
-          if (read != '"' && read != "'") {
-            previousChar(); // Back it up so that braces are fine.
-          } else {
-            buff.write(read);
-          }
-
-          token.end = _pos;
-          token.value = buff.toString().trim();
-          return token;
-        } else {
-          buff.write(read);
-        }
-      }
     } else if (possibleTokenType == LsonTokenType.NUMBER) {
       var buff = new StringBuffer();
 
@@ -182,13 +149,51 @@ class LsonStringLexer extends LsonLexer {
       }
 
       var content = buff.toString();
-
-      if (possibleTokenType.matching(content)) {
+      
+      try {
+        num.parse(content);
         token.end = token.start + content.length;
         token.value = content;
         return token;
-      } else {
-        throw new Exception("Failed to lex number: '${content}' is not a number");
+      } on FormatException catch (e) {
+        for (var i = 0; i < content.length; i++) {
+          previousChar();
+        }
+        possibleTokenType = LsonTokenType.STRING;
+        token.type = possibleTokenType;
+      }
+    }
+
+    if (possibleTokenType == LsonTokenType.STRING) {
+      var buff = new StringBuffer();
+      var started = true;
+
+      previousChar();
+
+      flipStarted() {
+        var m = started;
+        started = !started;
+        return m;
+      }
+
+      for (;;) {
+        var read = nextChar();
+        if (read == null) return null;
+
+        if (['"', "'", ":", ",", "}", "]", ")", "\n", "#", "/"].contains(read) && !(((read == '"' || read == "'") && flipStarted()))) {
+
+          if (read != '"' && read != "'") {
+            previousChar(); // Back it up so that braces are fine.
+          } else {
+            buff.write(read);
+          }
+
+          token.end = _pos;
+          token.value = buff.toString().trim();
+          return token;
+        } else {
+          buff.write(read);
+        }
       }
     } else if (possibleTokenType == LsonTokenType.COMMENT) {
       var start = _pos;

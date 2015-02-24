@@ -177,6 +177,7 @@ class LsonStringLexer extends LsonLexer {
       var started = true;
       var quoted = false;
       var isFirst = true;
+      var isFirstContent = false;
       var quote = '';
 
       previousChar();
@@ -189,14 +190,27 @@ class LsonStringLexer extends LsonLexer {
 
       for (;;) {
         var read = nextChar();
+        
         if (read == null) return null;
 
         if (isFirst) {
           if (read == '"' || read == "'") {
             quoted = true;
             quote = read;
+          } else {
+            isFirstContent = true;
           }
           isFirst = false;
+        } else {
+          if (!isFirstContent) {
+            isFirstContent = true;
+          }
+        }
+        
+        if (isFirstContent) {
+          if (read == "_") {
+            throw new Exception("Keys starting with _ are not allowed at this time.");
+          }
         }
         
         if ((quoted ? read == quote : true) && ['"', "'", ":", ",", "}", "]", ")", "\n", "#", "/"].contains(read) && !(((read == '"' || read == "'") && flipStarted()))) {
